@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base surface/foreground tokens per color mode */
+:root {
+  --surface: 255 255 255;
+  --surface-muted: 245 245 247;
+  --foreground: 17 17 20;
+  --foreground-muted: 107 107 117;
+  --border: 228 228 231;
+}
+
+.dark {
+  --surface: 24 24 27;
+  --surface-muted: 32 32 36;
+  --foreground: 250 250 250;
+  --foreground-muted: 161 161 170;
+  --border: 63 63 70;
+}
+
+/* Accent color per theme selection — swapped via data-theme on <html> */
+[data-theme='amber']  { --accent: 217 119 6;  --accent-foreground: 255 255 255; --accent-muted: 254 243 199; }
+[data-theme='blue']   { --accent: 79 70 229;  --accent-foreground: 255 255 255; --accent-muted: 224 231 255; }
+[data-theme='pink']   { --accent: 219 39 119; --accent-foreground: 255 255 255; --accent-muted: 252 231 243; }
+[data-theme='rose']   { --accent: 225 29 72;  --accent-foreground: 255 255 255; --accent-muted: 255 228 230; }
+[data-theme='emerald']{ --accent: 5 150 105;  --accent-foreground: 255 255 255; --accent-muted: 209 250 229; }
+[data-theme='black']  { --accent: 24 24 27;   --accent-foreground: 255 255 255; --accent-muted: 228 228 231; }
+
+body {
+  background-color: rgb(var(--surface));
+  color: rgb(var(--foreground));
+}
