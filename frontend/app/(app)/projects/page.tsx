@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { formatLabel } from '@/lib/format';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -19,14 +20,18 @@ export default function ProjectsPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-lg font-semibold">Projects</h1>
-        <button onClick={handleAdd} className="rounded-md bg-accent px-3 py-1.5 text-sm text-accent-fg">
+        <button
+          onClick={handleAdd}
+          className="w-fit rounded-md bg-accent px-3 py-1.5 text-sm text-accent-fg"
+        >
           + Add Project
         </button>
       </div>
 
-      <table className="w-full text-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[480px] text-sm">
         <thead className="border-b border-border text-left text-foreground-muted">
           <tr>
             <th className="pb-2 font-normal">Projects</th>
@@ -39,13 +44,14 @@ export default function ProjectsPage() {
           {projects.map((p) => (
             <tr key={p.id} className="border-b border-border">
               <td className="py-2">{p.title}</td>
-              <td className="py-2">{p.priority?.replace('_', ' ')}</td>
+              <td className="py-2">{formatLabel(p.priority || 'NO_PRIORITY')}</td>
               <td className="py-2">{p.lead?.fullName || '—'}</td>
               <td className="py-2">{p.dueDate ? new Date(p.dueDate).toLocaleDateString() : '—'}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }

@@ -10,20 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TaskStatus {
-  TODO
-  DOING
-  COMPLETED
-  ON_HOLD
-}
 
-enum Priority {
-  NO_PRIORITY
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
 
 model User {
   id          String   @id @default(uuid())
@@ -71,7 +58,7 @@ model Project {
   id          String    @id @default(uuid())
   workspaceId String
   title       String
-  priority    Priority  @default(NO_PRIORITY)
+  priority    String  @default("NO_PRIORITY")
   leadId      String?
   dueDate     DateTime?
   createdAt   DateTime  @default(now())
@@ -88,8 +75,8 @@ model Task {
   parentTaskId String?    // set when this row is a subtask of another task
   title        String
   description  String?
-  status       TaskStatus @default(TODO)
-  priority     Priority   @default(NO_PRIORITY)
+  status       String @default("TODO")
+  priority     String   @default("NO_PRIORITY")
   dueDate      DateTime?
   reporterId   String?
   createdAt    DateTime   @default(now())

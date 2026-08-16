@@ -1,16 +1,26 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { formatLabel } from '@/lib/format';
 
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [task, setTask] = useState<any>(null);
   const [comment, setComment] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getTask(id).then(setTask);
+    setLoading(true);
+    setError(null);
+    api
+      .getTask(id)
+      .then(setTask)
+      .catch((e) => setError(e.message || 'Something went wrong loading this task'))
+      .finally(() => setLoading(false));
   }, [id]);
 
   async function handleAddComment() {
@@ -20,21 +30,40 @@ export default function TaskDetailPage() {
     setComment('');
   }
 
-  if (!task) return <p className="text-sm text-foreground-muted">Loading…</p>;
+  if (loading) return <p className="text-sm text-foreground-muted">Loading…</p>;
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-md text-center">
+        <p className="text-sm text-red-600">{error}</p>
+        <p className="mt-1 text-sm text-foreground-muted">
+          This task may have been deleted, or the link is out of date.
+        </p>
+        <button
+          onClick={() => router.push('/tasks')}
+          className="mt-4 rounded-md bg-accent px-3 py-1.5 text-sm text-accent-fg"
+        >
+          ← Back to Tasks
+        </button>
+      </div>
+    );
+  }
+
+  if (!task) return null;
 
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-xl font-semibold">{task.title}</h1>
       {task.description && <p className="mt-2 text-sm text-foreground-muted">{task.description}</p>}
 
-      <div className="mt-4 grid grid-cols-2 gap-4 rounded-lg border border-border p-4 text-sm">
+      <div className="mt-4 grid grid-cols-1 gap-4 rounded-lg border border-border p-4 text-sm sm:grid-cols-2">
         <div>
           <p className="text-foreground-muted">Status</p>
-          <p className="font-medium">{task.status}</p>
+          <p className="font-medium">{formatLabel(task.status)}</p>
         </div>
         <div>
           <p className="text-foreground-muted">Priority</p>
-          <p className="font-medium">{task.priority}</p>
+          <p className="font-medium">{formatLabel(task.priority)}</p>
         </div>
         <div>
           <p className="text-foreground-muted">Due Date</p>
@@ -52,7 +81,8 @@ export default function TaskDetailPage() {
       <div className="mt-6">
         <h2 className="mb-2 text-sm font-medium">Subtasks</h2>
         {task.subtasks?.length ? (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[420px] text-sm">
             <thead className="text-left text-foreground-muted">
               <tr>
                 <th className="pb-1 font-normal">Task</th>
@@ -64,7 +94,7 @@ export default function TaskDetailPage() {
               {task.subtasks.map((s: any) => (
                 <tr key={s.id} className="border-t border-border">
                   <td className="py-1.5">{s.title}</td>
-                  <td className="py-1.5">{s.priority}</td>
+                  <td className="py-1.5">{formatLabel(s.priority)}</td>
                   <td className="py-1.5">
                     {s.dueDate ? new Date(s.dueDate).toLocaleDateString() : '—'}
                   </td>
@@ -72,6 +102,7 @@ export default function TaskDetailPage() {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <p className="text-sm text-foreground-muted">No subtasks yet.</p>
         )}
@@ -88,7 +119,7 @@ export default function TaskDetailPage() {
             </div>
           ))}
         </div>
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
           <input
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -97,7 +128,7 @@ export default function TaskDetailPage() {
           />
           <button
             onClick={handleAddComment}
-            className="rounded-md bg-accent px-3 py-1.5 text-sm text-accent-fg"
+            className="w-fit rounded-md bg-accent px-3 py-1.5 text-sm text-accent-fg"
           >
             Send
           </button>

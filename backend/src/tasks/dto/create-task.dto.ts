@@ -1,12 +1,14 @@
-import { TaskStatus, Priority } from '@prisma/client';
 import {
   IsArray,
   IsDateString,
-  IsEnum,
+  IsIn,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
+
+const TASK_STATUSES = ['TODO', 'DOING', 'COMPLETED', 'ON_HOLD'];
+const PRIORITIES = ['NO_PRIORITY', 'LOW', 'MEDIUM', 'HIGH', 'URGENT'];
 
 export class CreateTaskDto {
   @IsString()
@@ -18,12 +20,12 @@ export class CreateTaskDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(TaskStatus)
-  status?: TaskStatus;
+  @IsIn(TASK_STATUSES)
+  status?: string;
 
   @IsOptional()
-  @IsEnum(Priority)
-  priority?: Priority;
+  @IsIn(PRIORITIES)
+  priority?: string;
 
   @IsOptional()
   @IsDateString()

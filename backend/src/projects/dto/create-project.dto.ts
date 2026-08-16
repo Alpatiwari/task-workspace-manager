@@ -1,5 +1,6 @@
-import { Priority } from '@prisma/client';
-import { IsDateString, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+
+const PRIORITIES = ['NO_PRIORITY', 'LOW', 'MEDIUM', 'HIGH', 'URGENT'];
 
 export class CreateProjectDto {
   @IsString()
@@ -7,8 +8,8 @@ export class CreateProjectDto {
   title: string;
 
   @IsOptional()
-  @IsEnum(Priority)
-  priority?: Priority;
+  @IsIn(PRIORITIES)
+  priority?: string;
 
   @IsOptional()
   @IsString()

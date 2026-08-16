@@ -17,11 +17,11 @@ export function KanbanBoard({
   onAddTask: (status: string) => void;
 }) {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-3 md:gap-4">
       {COLUMNS.map((col) => {
         const columnTasks = tasks.filter((t) => t.status === col.status);
         return (
-          <div key={col.status} className="w-72 shrink-0">
+          <div key={col.status} className="w-64 shrink-0 md:w-72">
             <div className="mb-2 flex items-center justify-between px-1">
               <h3 className="text-sm font-medium">{col.label}</h3>
               <span className="text-xs text-foreground-muted">{columnTasks.length}</span>
