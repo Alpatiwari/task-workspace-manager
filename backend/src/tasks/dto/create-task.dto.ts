@@ -16,6 +16,10 @@ export class CreateTaskDto {
   title: string;
 
   @IsOptional()
+@IsString()
+teamId?: string;
+
+  @IsOptional()
   @IsString()
   description?: string;
 
@@ -26,6 +30,10 @@ export class CreateTaskDto {
   @IsOptional()
   @IsIn(PRIORITIES)
   priority?: string;
+  
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
 
   @IsOptional()
   @IsDateString()

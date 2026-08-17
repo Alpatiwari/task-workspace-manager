@@ -3,22 +3,24 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
+import { ThemeModePanel, ColorModePanel } from '@/components/theme/ThemeSwitcher';
 
 const NAV = [
   { href: '/tasks', label: 'Tasks' },
   { href: '/projects', label: 'Projects' },
 ];
 
+type OpenPanel = 'theme' | 'color' | null;
+
 function SidebarContent({
   pathname,
-  themeOpen,
-  setThemeOpen,
+  openPanel,
+  setOpenPanel,
   onNavigate,
 }: {
   pathname: string | null;
-  themeOpen: boolean;
-  setThemeOpen: (v: boolean) => void;
+  openPanel: OpenPanel;
+  setOpenPanel: (v: OpenPanel) => void;
   onNavigate?: () => void;
 }) {
   return (
@@ -45,19 +47,44 @@ function SidebarContent({
         ))}
       </nav>
 
+      {/* Change Theme — Light/Dark, matches Figma's first menu item */}
       <div className="relative">
         <button
-          onClick={() => setThemeOpen(!themeOpen)}
+          onClick={() => setOpenPanel(openPanel === 'theme' ? null : 'theme')}
           className="w-full rounded-md px-3 py-1.5 text-left text-sm text-foreground-muted hover:bg-surface-muted"
         >
           Change Theme
         </button>
-        {themeOpen && (
+        {openPanel === 'theme' && (
           <div className="absolute bottom-full left-0 z-20 mb-2">
-            <ThemeSwitcher />
+            <ThemeModePanel />
           </div>
         )}
       </div>
+
+      {/* Color Mode — the 6 accent colors, matches Figma's second menu item */}
+      <div className="relative">
+        <button
+          onClick={() => setOpenPanel(openPanel === 'color' ? null : 'color')}
+          className="w-full rounded-md px-3 py-1.5 text-left text-sm text-foreground-muted hover:bg-surface-muted"
+        >
+          Color Mode
+        </button>
+        {openPanel === 'color' && (
+          <div className="absolute bottom-full left-0 z-20 mb-2">
+            <ColorModePanel />
+          </div>
+        )}
+      </div>
+
+      {/* Settings — placeholder for now, no settings page exists yet */}
+      <button
+        disabled
+        title="Not yet implemented"
+        className="w-full rounded-md px-3 py-1.5 text-left text-sm text-foreground-muted opacity-50"
+      >
+        Settings
+      </button>
 
       <Link
         href="/profile"
@@ -72,7 +99,7 @@ function SidebarContent({
 
 export default function AppShellLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [themeOpen, setThemeOpen] = useState(false);
+  const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
@@ -102,8 +129,8 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
           <div className="flex w-64 flex-col border-r border-border bg-surface p-3">
             <SidebarContent
               pathname={pathname}
-              themeOpen={themeOpen}
-              setThemeOpen={setThemeOpen}
+              openPanel={openPanel}
+              setOpenPanel={setOpenPanel}
               onNavigate={() => setMobileNavOpen(false)}
             />
           </div>
@@ -113,7 +140,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
 
       {/* Desktop sidebar — always visible at md+ */}
       <aside className="hidden w-56 shrink-0 flex-col border-r border-border p-3 md:flex">
-        <SidebarContent pathname={pathname} themeOpen={themeOpen} setThemeOpen={setThemeOpen} />
+        <SidebarContent pathname={pathname} openPanel={openPanel} setOpenPanel={setOpenPanel} />
       </aside>
 
       <main className="flex-1 overflow-x-auto p-4 md:p-6">{children}</main>

@@ -39,6 +39,7 @@ model Workspace {
   members  WorkspaceMember[]
   projects Project[]
   tasks    Task[]
+  teams    Team[]
 }
 
 model WorkspaceMember {
@@ -73,10 +74,12 @@ model Task {
   workspaceId  String
   projectId    String?
   parentTaskId String?    // set when this row is a subtask of another task
+  teamId       String?
   title        String
   description  String?
   status       String @default("TODO")
   priority     String   @default("NO_PRIORITY")
+  startDate    DateTime?
   dueDate      DateTime?
   reporterId   String?
   createdAt    DateTime   @default(now())
@@ -86,11 +89,22 @@ model Task {
   project   Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
   parent    Task?         @relation("Subtasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
   subtasks  Task[]        @relation("Subtasks")
+  team      Team?         @relation(fields: [teamId], references: [id], onDelete: SetNull)
   reporter  User?         @relation("TaskReporter", fields: [reporterId], references: [id])
   members   TaskMember[]
   labels    TaskLabel[]
   comments  Comment[]
   activity  ActivityLog[]
+}
+
+model Team {
+  id          String   @id @default(uuid())
+  workspaceId String
+  name        String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks     Task[]
 }
 
 model TaskMember {

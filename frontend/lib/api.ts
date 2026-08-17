@@ -36,6 +36,10 @@ async function request(path: string, options: RequestInit = {}) {
 export const api = {
   guestLogin: (displayName?: string) =>
     request('/auth/guest', { method: 'POST', body: JSON.stringify({ displayName }) }),
+  
+  
+  googleLogin: (idToken: string) =>
+    request('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) }),
 
   getTasks: (projectId?: string) =>
     request(`/tasks${projectId ? `?projectId=${projectId}` : ''}`),
@@ -47,10 +51,15 @@ export const api = {
 
   getProjects: () => request('/projects'),
   createProject: (data: any) => request('/projects', { method: 'POST', body: JSON.stringify(data) }),
+  updateProject: (id: string, data: any) =>
+    request(`/projects/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
 
   getComments: (taskId: string) => request(`/tasks/${taskId}/comments`),
   addComment: (taskId: string, body: string) =>
     request(`/tasks/${taskId}/comments`, { method: 'POST', body: JSON.stringify({ body }) }),
+
+  getTeams: () => request('/teams'),
+  createTeam: (name: string) => request('/teams', { method: 'POST', body: JSON.stringify({ name }) }),
 
   getMe: () => request('/users/me'),
   updateMe: (data: any) => request('/users/me', { method: 'PATCH', body: JSON.stringify(data) }),

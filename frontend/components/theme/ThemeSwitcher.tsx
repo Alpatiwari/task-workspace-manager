@@ -11,47 +11,45 @@ const ACCENT_OPTIONS: { value: AccentTheme; label: string; swatch: string }[] = 
   { value: 'black', label: 'Black', swatch: '#18181b' },
 ];
 
-export function ThemeSwitcher() {
-  const { colorMode, accent, setColorMode, setAccent } = useTheme();
+// "Change Theme" — Light / Dark only, matching Figma's first menu item.
+export function ThemeModePanel() {
+  const { colorMode, setColorMode } = useTheme();
 
   return (
-    <div className="w-56 rounded-lg border border-border bg-surface p-3 text-sm shadow-lg">
-      <p className="mb-2 px-1 text-xs font-medium text-foreground-muted">Color Mode</p>
-      <div className="mb-3 flex gap-2">
-        {(['light', 'dark'] as const).map((mode) => (
-          <button
-            key={mode}
-            onClick={() => setColorMode(mode)}
-            className={`flex-1 rounded-md border px-2 py-1.5 capitalize transition ${
-              colorMode === mode
-                ? 'border-accent bg-accent-muted text-accent'
-                : 'border-border text-foreground-muted hover:bg-surface-muted'
-            }`}
-          >
-            {mode}
-          </button>
-        ))}
-      </div>
+    <div className="w-40 rounded-lg border border-border bg-surface p-2 text-sm shadow-lg">
+      {(['light', 'dark'] as const).map((mode) => (
+        <button
+          key={mode}
+          onClick={() => setColorMode(mode)}
+          className="flex w-full items-center justify-between rounded-md px-2 py-1.5 capitalize hover:bg-surface-muted"
+        >
+          {mode}
+          {colorMode === mode && <span className="text-accent">✓</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
 
-      <p className="mb-2 px-1 text-xs font-medium text-foreground-muted">Theme</p>
-      <div className="flex flex-col gap-1">
-        {ACCENT_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => setAccent(opt.value)}
-            className="flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-surface-muted"
-          >
-            <span className="flex items-center gap-2">
-              <span
-                className="h-3 w-3 rounded-sm"
-                style={{ backgroundColor: opt.swatch }}
-              />
-              {opt.label}
-            </span>
-            {accent === opt.value && <span className="text-accent">✓</span>}
-          </button>
-        ))}
-      </div>
+// "Color Mode" — the 6 accent colors, matching Figma's second menu item.
+export function ColorModePanel() {
+  const { accent, setAccent } = useTheme();
+
+  return (
+    <div className="w-48 rounded-lg border border-border bg-surface p-2 text-sm shadow-lg">
+      {ACCENT_OPTIONS.map((opt) => (
+        <button
+          key={opt.value}
+          onClick={() => setAccent(opt.value)}
+          className="flex w-full items-center justify-between rounded-md px-2 py-1.5 hover:bg-surface-muted"
+        >
+          <span className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: opt.swatch }} />
+            {opt.label}
+          </span>
+          {accent === opt.value && <span className="text-accent">✓</span>}
+        </button>
+      ))}
     </div>
   );
 }

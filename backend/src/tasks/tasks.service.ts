@@ -7,7 +7,9 @@ const taskInclude = {
   members: { include: { user: true } },
   labels: { include: { label: true } },
   reporter: true,
+  team: true, 
   subtasks: true,
+  
   comments: { include: { author: true }, orderBy: { createdAt: 'asc' as const } },
   activity: { include: { actor: true }, orderBy: { createdAt: 'desc' as const } },
 };
@@ -40,6 +42,7 @@ export class TasksService {
         description: dto.description,
         status: dto.status,
         priority: dto.priority,
+        startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
         projectId: dto.projectId,
         parentTaskId: dto.parentTaskId,
@@ -76,8 +79,10 @@ export class TasksService {
         description: dto.description,
         status: dto.status,
         priority: dto.priority,
+        startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
         projectId: dto.projectId,
+        teamId: dto.teamId,
       },
       include: taskInclude,
     });

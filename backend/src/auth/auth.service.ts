@@ -1,15 +1,22 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../prisma/prisma.service';
 import { GuestLoginDto } from './dto/guest-login.dto';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthService {
+  private readonly googleClient: OAuth2Client;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
-  ) {}
+    private readonly config: ConfigService,
+  ) {
+    this.googleClient = new OAuth2Client(this.config.get<string>('GOOGLE_CLIENT_ID'));
+  }
 
   /**
    * Guest login: creates a throwaway user + a personal workspace,
@@ -37,25 +44,41 @@ export class AuthService {
   }
 
   /**
-   * Google login stub. Wire this up to a real Google OAuth flow
-   * (e.g. @nestjs/passport + passport-google-oauth20) once you have
-   * GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET in your .env.
-   * For now it accepts a verified Google profile object from the frontend
-   * (e.g. via NextAuth on the client) and finds-or-creates the user.
+   * Real Google login. Takes the ID token produced by Google Identity
+   * Services on the frontend (the official "Sign in with Google" button),
+   * and verifies it server-side against GOOGLE_CLIENT_ID before trusting
+   * anything in it. This is what makes it safe — the frontend can't just
+   * claim to be any email address, since the token is cryptographically
+   * signed by Google and checked here.
    */
-  async googleLogin(profile: { email: string; name?: string; avatarUrl?: string }) {
-    if (!profile?.email) {
-      throw new UnauthorizedException('Google profile missing email');
+  async googleLogin(idToken: string) {
+    if (!idToken) {
+      throw new UnauthorizedException('Missing Google ID token');
     }
 
-    let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
+    let payload;
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: this.config.get<string>('GOOGLE_CLIENT_ID'),
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    if (!payload?.email) {
+      throw new UnauthorizedException('Google token missing email');
+    }
+
+    let user = await this.prisma.user.findUnique({ where: { email: payload.email } });
 
     if (!user) {
       user = await this.prisma.user.create({
         data: {
-          email: profile.email,
-          fullName: profile.name || profile.email.split('@')[0],
-          avatarUrl: profile.avatarUrl,
+          email: payload.email,
+          fullName: payload.name || payload.email.split('@')[0],
+          avatarUrl: payload.picture,
           isGuest: false,
         },
       });

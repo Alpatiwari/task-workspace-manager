@@ -12,7 +12,7 @@ export class AuthController {
   }
 
   @Post('google')
-  googleLogin(@Body() profile: { email: string; name?: string; avatarUrl?: string }) {
-    return this.authService.googleLogin(profile);
+  googleLogin(@Body() body: { idToken: string }) {
+    return this.authService.googleLogin(body.idToken);
   }
 }
