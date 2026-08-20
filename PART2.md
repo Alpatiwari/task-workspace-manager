@@ -21,6 +21,8 @@ short title and part of the goal description (the full text gets cut off,
 which I'll mention below). Clicking a goal loads its details on the right
 side of the screen.
 
+![Goals list and Capture panel](part-2/01-goals-and-capture.png)
+
 ## Actually taking data
 
 I clicked into the first goal — "Social Studies," where the target was
@@ -35,6 +37,8 @@ that goal in the sidebar list, and also on the student's name tab at the top.
 So at a glance you can tell which goals still need data taken in this session
 and which ones are done.
 
+![Counter after logging two data points](part-2/02-data-logged.png)
+
 There's also a Notes section right below the counter, with an "Add Note"
 button and a "Load Last Note" shortcut, plus a separate "Lesson Plan" tab —
 so you can jot down context without leaving the data screen.
@@ -48,6 +52,8 @@ axis. The line went up from 1 all the way to 5 over a few months, then
 dropped down to 2 in the latest session. It's a really quick way to see if a
 student is trending toward their goal or slipping, without having to build a
 chart yourself.
+
+![Graph tab showing progress over time](part-2/03-graph-view.png)
 
 I didn't dig deep into Stats or Info, but based on the tab names I'd guess
 Stats shows numeric summaries (like mastery percentage) and Info shows the
